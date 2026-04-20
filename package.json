@@ -3,6 +3,7 @@
   "version": "5.0.0",
   "description": "NyKa Shop - Beauty & Skincare E-commerce (Supabase)",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
