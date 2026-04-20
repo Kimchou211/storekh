@@ -2,13 +2,13 @@
 //  server.js  —  NyKa Shop  Complete Backend  v5.0
 //  Supabase · JWT Auth · Bakong KHQR · Telegram · Products DB
 // ════════════════════════════════════════════════════════════
-const express  = require('express');
-const bcrypt   = require('bcryptjs');
-const jwt      = require('jsonwebtoken');
-const cors     = require('cors');
-const QRCode   = require('qrcode');
-const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config();
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import cors from 'cors';
+import QRCode from 'qrcode';
+import { createClient } from '@supabase/supabase-js';
+import 'dotenv/config';
 
 const app = express();
 
@@ -848,15 +848,23 @@ app.use(express.static('.'));
 async function start() {
   await seedAdmin();
   await registerWebhook();
-  app.listen(PORT, () => {
-    console.log('\n╔══════════════════════════════════════════════╗');
-    console.log(`║  🌸  NyKa Shop  Server  →  port ${PORT}           ║`);
-    console.log('╠══════════════════════════════════════════════╣');
-    console.log(`║  🗄️   Database : Supabase (PostgreSQL)         ║`);
-    console.log(`║  💳  Bakong   : ${BAKONG.account}   ║`);
-    console.log(`║  🔐  Admin    : admin@nyka.shop / admin123    ║`);
-    console.log(`║  📡  Health   : http://localhost:${PORT}/api/test  ║`);
-    console.log('╚══════════════════════════════════════════════╝\n');
-  });
+
+  // app.listen ដំណើរការតែលើ Local Node.js ប៉ុណ្ណោះ
+  if (typeof process !== 'undefined' && process.release && process.release.name === 'node') {
+    app.listen(PORT, () => {
+      console.log('\n╔══════════════════════════════════════════════╗');
+      console.log(`║  🌸  NyKa Shop  Server  →  port ${PORT}           ║`);
+      console.log('╠══════════════════════════════════════════════╣');
+      console.log(`║  🗄️   Database : Supabase (PostgreSQL)         ║`);
+      console.log(`║  💳  Bakong   : ${BAKONG.account}   ║`);
+      console.log(`║  🔐  Admin    : admin@nyka.shop / admin123    ║`);
+      console.log(`║  📡  Health   : http://localhost:${PORT}/api/test  ║`);
+      console.log('╚══════════════════════════════════════════════╝\n');
+    });
+  }
 }
+
 start().catch(console.error);
+
+// Export សម្រាប់ Cloudflare Workers
+export default app;
