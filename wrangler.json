@@ -1,0 +1,15 @@
+{
+  "name": "chomross",
+  "compatibility_date": "2024-04-20",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS"
+  },
+  "main": "server.js",
+  "observability": {
+    "enabled": true
+  }
+}
