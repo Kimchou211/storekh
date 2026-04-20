@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>NyKa Admin — Control Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Kantumruy+Pro:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f0e0;--bg2:#ede8d8;--bg3:#e5dfc8;--surf:#faf6ea;--surf2:#f0ebd8;
+  --bord:rgba(100,80,20,.10);--bord2:rgba(100,80,20,.18);
+  --txt:#1c1a14;--txt2:#5a5238;--mut:#9a8e6e;
+  --rose:#b8860b;--rose-dk:#8b6508;--rose-lt:#d4a017;
+  --rose-gl:rgba(184,134,11,.18);--rose-bg:rgba(184,134,11,.08);
+  --gold:#b8860b;--gold-bg:rgba(184,134,11,.08);
+  --green:#2d7a3a;--green-bg:rgba(45,122,58,.08);
+  --blue:#1a56a0;--blue-bg:rgba(26,86,160,.08);
+  --red:#c0392b;--red-bg:rgba(192,57,43,.08);
+  --purple:#6d28d9;--purple-bg:rgba(109,40,217,.08);
+  --teal:#0e7490;--teal-bg:rgba(14,116,144,.08);
+  --sh-sm:0 2px 8px rgba(100,80,20,.10);--sh-md:0 6px 24px rgba(100,80,20,.12);
+  --sh-lg:0 12px 40px rgba(100,80,20,.15);--sh-rose:0 6px 24px rgba(184,134,11,.28);
+  --r:10px;--r-lg:16px;--r-xl:22px;
+  --font:'DM Sans','Kantumruy Pro',system-ui,sans-serif;
+  --disp:'Syne',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;
+  --ease:cubic-bezier(.4,0,.2,1);--bounce:cubic-bezier(.34,1.56,.64,1);
+  --sidebar:240px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px}
+body{background:var(--bg);color:var(--txt);font-family:var(--font);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+button{font-family:var(--font);cursor:pointer}
+input,select,textarea{font-family:var(--font);color:var(--txt)}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--surf2);border-radius:99px}
+a{color:inherit;text-decoration:none}
+ 
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;background-image:radial-gradient(ellipse at 20% 50%,rgba(244,63,110,.07) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(59,130,246,.05) 0%,transparent 50%)}
+.login-box{background:var(--surf);border:1px solid var(--bord2);border-radius:var(--r-xl);padding:40px;width:100%;max-width:400px;box-shadow:var(--sh-lg);animation:fade-up .5s var(--bounce) both}
+@keyframes fade-up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.login-logo{font-family:var(--disp);font-size:1.5rem;font-weight:800;margin-bottom:4px;letter-spacing:-.03em}
+.login-logo span{color:var(--rose)}
+.login-sub{font-size:.78rem;color:var(--txt2);margin-bottom:28px;font-family:var(--mono)}
+.lf-label{display:block;font-size:.72rem;font-weight:600;color:var(--txt2);margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase;font-family:var(--mono)}
+.lf-input{width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--bord2);border-radius:var(--r);color:var(--txt);font-size:.9375rem;outline:none;margin-bottom:14px;transition:border-color .15s,box-shadow .15s}
+.lf-input:focus{border-color:var(--rose-lt);box-shadow:0 0 0 3px var(--rose-gl)}
+.lf-input::placeholder{color:var(--mut)}
+.login-err{color:var(--red);font-size:.8rem;margin-bottom:12px;padding:8px 12px;background:var(--red-bg);border-radius:8px;border:1px solid rgba(239,68,68,.2);display:none}
+.login-err.on{display:block}
+.btn-login{width:100%;padding:12px;background:var(--rose);border:none;border-radius:var(--r);color:#fff;font-weight:700;font-size:.9375rem;transition:background .15s,transform .1s,box-shadow .15s}
+.btn-login:hover{background:var(--rose-dk);transform:translateY(-1px);box-shadow:var(--sh-rose)}
+.btn-login:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.login-hint{text-align:center;font-size:.72rem;color:var(--mut);margin-top:14px;font-family:var(--mono)}
+ 
+/* APP */
+#app{display:none;min-height:100vh}
+#app.on{display:flex}
+ 
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);min-height:100vh;background:var(--bg2);border-right:1px solid var(--bord);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;transition:transform .3s var(--ease)}
+.sb-logo{padding:22px 20px 18px;border-bottom:1px solid var(--bord)}
+.sb-logo-txt{font-family:var(--disp);font-size:1.2rem;font-weight:800;letter-spacing:-.03em}
+.sb-logo-txt span{color:var(--rose)}
+.sb-logo-sub{font-size:.62rem;color:var(--mut);font-family:var(--mono);letter-spacing:.07em;text-transform:uppercase;margin-top:2px}
+.sb-nav{flex:1;padding:14px 10px;overflow-y:auto}
+.sb-sec{font-size:.6rem;font-weight:700;color:var(--mut);letter-spacing:.1em;text-transform:uppercase;font-family:var(--mono);padding:0 10px;margin:14px 0 6px;display:block}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r);cursor:pointer;color:var(--txt2);font-size:.875rem;font-weight:500;transition:color .15s,background .15s;margin-bottom:2px;position:relative;border:none;background:transparent;width:100%;text-align:left}
+.sb-item:hover{color:var(--txt);background:var(--surf)}
+.sb-item.on{color:var(--rose);background:var(--rose-bg);font-weight:600}
+.sb-item.on::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;background:var(--rose);border-radius:0 3px 3px 0}
+.sb-ico{font-size:1rem;width:20px;text-align:center;flex-shrink:0}
+.sb-badge{margin-left:auto;background:var(--rose);color:#fff;min-width:18px;height:18px;padding:0 5px;border-radius:99px;font-size:.6rem;font-weight:700;font-family:var(--mono);display:flex;align-items:center;justify-content:center}
+.sb-footer{padding:14px 10px;border-top:1px solid var(--bord)}
+.sb-user{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r);background:var(--surf)}
+.sb-av{width:32px;height:32px;background:var(--rose);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;font-family:var(--disp);color:#fff;flex-shrink:0}
+.sb-uname{font-size:.8rem;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-urole{font-size:.62rem;color:var(--mut);font-family:var(--mono)}
+.sb-logout{width:28px;height:28px;border:none;background:transparent;color:var(--mut);cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:color .15s,background .15s;flex-shrink:0}
+.sb-logout:hover{color:var(--red);background:var(--red-bg)}
+ 
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;min-height:100vh;display:flex;flex-direction:column}
+.topbar{height:60px;background:var(--bg2);border-bottom:1px solid var(--bord);display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:50}
+.tb-title{font-family:var(--disp);font-size:1.1rem;font-weight:700;letter-spacing:-.02em}
+.tb-sub{font-size:.72rem;color:var(--txt2);font-family:var(--mono);margin-top:1px}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.tb-live{display:flex;align-items:center;gap:6px;font-size:.7rem;color:var(--green);font-family:var(--mono);background:var(--green-bg);border:1px solid rgba(16,185,129,.2);border-radius:99px;padding:4px 10px}
+.tb-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 1.5s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.tb-btn{width:32px;height:32px;border:1px solid var(--bord2);background:transparent;color:var(--txt2);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;font-size:.9rem}
+.tb-btn:hover{color:var(--txt);background:var(--surf)}
+ 
+/* SECTIONS */
+.section{display:none;padding:24px;animation:sec-in .2s var(--ease) both}
+.section.on{display:block}
+@keyframes sec-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+ 
+/* STAT CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r-lg);padding:18px 20px;transition:border-color .2s,transform .2s;cursor:default}
+.stat-card:hover{border-color:var(--bord2);transform:translateY(-2px)}
+.sc-label{font-size:.68rem;color:var(--txt2);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.sc-val{font-family:var(--disp);font-size:1.9rem;font-weight:700;letter-spacing:-.03em;line-height:1}
+.sc-trend{font-size:.72rem;color:var(--txt2);margin-top:6px;font-family:var(--mono)}
+.sc-rose .sc-val{color:var(--rose-lt)}
+.sc-green .sc-val{color:var(--green)}
+.sc-gold .sc-val{color:var(--gold)}
+.sc-blue .sc-val{color:var(--blue)}
+.sc-purple .sc-val{color:var(--purple)}
+ 
+/* CARD */
+.card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r-lg);overflow:hidden}
+.card-hd{padding:16px 20px;border-bottom:1px solid var(--bord);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.card-title{font-weight:700;font-size:.9rem;letter-spacing:-.01em}
+ 
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 16px;text-align:left;font-size:.63rem;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.07em;font-family:var(--mono);border-bottom:1px solid var(--bord);white-space:nowrap}
+td{padding:11px 16px;font-size:.825rem;border-bottom:1px solid var(--bord);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.015)}
+.td-mono{font-family:var(--mono);font-size:.78rem}
+.empty-row{text-align:center;padding:40px 16px;color:var(--txt2);font-size:.85rem}
+ 
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:99px;font-size:.68rem;font-weight:600;font-family:var(--mono);white-space:nowrap}
+.badge-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.badge-green{background:var(--green-bg);color:var(--green);border:1px solid rgba(16,185,129,.2)}
+.badge-gold{background:var(--gold-bg);color:var(--gold);border:1px solid rgba(245,158,11,.2)}
+.badge-rose{background:var(--rose-bg);color:var(--rose-lt);border:1px solid rgba(244,63,110,.2)}
+.badge-blue{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(59,130,246,.2)}
+.badge-red{background:var(--red-bg);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.badge-mut{background:rgba(255,255,255,.04);color:var(--txt2);border:1px solid var(--bord)}
+.badge-teal{background:var(--teal-bg);color:var(--teal);border:1px solid rgba(6,182,212,.2)}
+ 
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--r);border:none;font-size:.8rem;font-weight:600;transition:all .15s;cursor:pointer;white-space:nowrap}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-rose{background:var(--rose);color:#fff}
+.btn-rose:hover:not(:disabled){background:var(--rose-dk)}
+.btn-green{background:var(--green-bg);color:var(--green);border:1px solid rgba(16,185,129,.2)}
+.btn-green:hover:not(:disabled){background:var(--green);color:#fff}
+.btn-blue{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(59,130,246,.2)}
+.btn-blue:hover:not(:disabled){background:var(--blue);color:#fff}
+.btn-red{background:var(--red-bg);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.btn-red:hover:not(:disabled){background:var(--red);color:#fff}
+.btn-ghost{background:transparent;color:var(--txt2);border:1px solid var(--bord2)}
+.btn-ghost:hover:not(:disabled){color:var(--txt);background:var(--surf2)}
+.btn-confirm{background:#16a34a;color:#fff;border:none}
+.btn-confirm:hover:not(:disabled){background:#15803d}
+.btn-sm{padding:5px 10px;font-size:.74rem;border-radius:7px}
+ 
+/* FORM */
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.fg label{font-size:.72rem;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.04em;font-family:var(--mono)}
+.fi{padding:9px 12px;background:var(--bg3);border:1.5px solid var(--bord2);border-radius:var(--r);color:var(--txt);font-size:.875rem;outline:none;transition:border-color .15s,box-shadow .15s;width:100%}
+.fi:focus{border-color:var(--rose-lt);box-shadow:0 0 0 3px var(--rose-gl)}
+.fi::placeholder{color:var(--mut)}
+select.fi option{background:var(--bg3)}
+textarea.fi{resize:vertical;min-height:70px}
+ 
+/* SEARCH BAR */
+.filter-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.search-wrap{position:relative}
+.search-wrap input{padding-left:32px;width:100%}
+.search-ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--txt2);font-size:.82rem;pointer-events:none}
+.ftabs{display:flex;gap:4px;flex-wrap:wrap}
+.ftab{padding:6px 12px;border-radius:8px;font-size:.74rem;font-weight:600;cursor:pointer;border:1px solid var(--bord2);background:transparent;color:var(--txt2);transition:all .15s;font-family:var(--mono)}
+.ftab:hover{color:var(--txt);background:var(--surf2)}
+.ftab.on{background:var(--rose-bg);color:var(--rose-lt);border-color:rgba(244,63,110,.3)}
+ 
+/* MODAL */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:500;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-ov.on{display:flex;animation:fade-in .15s var(--ease)}
+@keyframes fade-in{from{opacity:0}to{opacity:1}}
+.modal{background:var(--surf);border:1px solid var(--bord2);border-radius:var(--r-xl);width:100%;box-shadow:var(--sh-lg);max-height:92vh;display:flex;flex-direction:column;animation:modal-up .2s var(--bounce) both}
+@keyframes modal-up{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.modal-hd{padding:20px 24px;border-bottom:1px solid var(--bord);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-title{font-family:var(--disp);font-size:1rem;font-weight:700;letter-spacing:-.02em}
+.modal-x{width:30px;height:30px;border:none;background:transparent;color:var(--txt2);font-size:1.1rem;cursor:pointer;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.modal-x:hover{color:var(--txt);background:var(--surf2)}
+.modal-body{padding:20px 24px;overflow-y:auto;flex:1}
+.modal-ft{padding:16px 24px;border-top:1px solid var(--bord);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0;background:var(--bg2);border-radius:0 0 var(--r-xl) var(--r-xl)}
+ 
+/* INFO GRID (order detail) */
+.info-box{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.info-cell{background:var(--bg3);border:1px solid var(--bord);border-radius:var(--r);padding:12px}
+.info-lbl{font-size:.62rem;color:var(--txt2);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.info-val{font-size:.85rem;font-weight:600;color:var(--txt)}
+.info-val.mono{font-family:var(--mono);color:var(--rose-lt)}
+ 
+/* ORDER ITEMS */
+.oi-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--bord);font-size:.84rem}
+.oi-row:last-child{border-bottom:none}
+ 
+/* DELIVERY TRACKER */
+.del-track{display:flex;margin:10px 0 14px}
+.del-step{flex:1;text-align:center;position:relative}
+.del-step::before{content:'';position:absolute;top:13px;left:50%;right:-50%;height:2px;background:var(--bord2);z-index:0}
+.del-step:last-child::before{display:none}
+.del-dot{width:26px;height:26px;border-radius:50%;background:var(--bg3);border:2px solid var(--bord2);display:flex;align-items:center;justify-content:center;font-size:.72rem;margin:0 auto 5px;position:relative;z-index:1;transition:all .25s}
+.del-step.done .del-dot{background:var(--green);border-color:var(--green);color:#fff}
+.del-step.active .del-dot{background:var(--rose);border-color:var(--rose);color:#fff;box-shadow:0 0 0 4px var(--rose-gl)}
+.del-label{font-size:.6rem;color:var(--txt2);font-family:var(--mono)}
+.del-step.done .del-label,.del-step.active .del-label{color:var(--txt)}
+ 
+/* PRODUCT GRID */
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.prod-card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r-lg);overflow:hidden;transition:border-color .2s,transform .2s}
+.prod-card:hover{border-color:var(--bord2);transform:translateY(-2px)}
+.prod-img{height:160px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative;overflow:hidden}
+.prod-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.prod-body{padding:14px}
+.prod-name{font-weight:700;font-size:.9rem;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prod-brand{font-size:.72rem;color:var(--txt2);margin-bottom:8px;font-family:var(--mono)}
+.prod-price{font-family:var(--disp);font-size:1.1rem;font-weight:700;color:var(--rose-lt)}
+.prod-foot{padding:10px 14px;border-top:1px solid var(--bord);display:flex;align-items:center;justify-content:space-between;gap:8px}
+ 
+/* IMAGE PREVIEW */
+.img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;margin-top:8px}
+.img-thumb{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;border:1px solid var(--bord)}
+.img-thumb img{width:100%;height:100%;object-fit:cover}
+.img-rm{position:absolute;top:3px;right:3px;width:20px;height:20px;background:rgba(0,0,0,.7);border:none;border-radius:50%;color:#fff;font-size:.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+ 
+/* PROGRESS BAR */
+.prog-bar{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden;flex:1}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--rose),var(--gold));border-radius:99px;transition:width .4s}
+ 
+/* REVENUE CHART */
+.chart-wrap{padding:20px}
+.chart-bars{display:flex;align-items:flex-end;gap:8px;height:140px}
+.chart-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.chart-bar{width:100%;background:linear-gradient(180deg,var(--rose) 0%,var(--rose-dk) 100%);border-radius:5px 5px 0 0;min-height:3px;transition:height .4s var(--bounce);opacity:.85;cursor:default}
+.chart-bar:hover{opacity:1}
+.chart-lbl{font-size:.6rem;color:var(--txt2);font-family:var(--mono);text-align:center}
+.chart-amt{font-size:.62rem;color:var(--rose-lt);font-family:var(--mono)}
+ 
+/* TOAST */
+#toastWrap{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.adm-toast{padding:12px 18px;border-radius:var(--r);font-size:.84rem;font-weight:600;box-shadow:var(--sh-md);animation:toast-in .3s var(--bounce) both;max-width:300px}
+.adm-toast.ok{background:#065f46;color:#6ee7b7;border:1px solid rgba(110,231,183,.2)}
+.adm-toast.er{background:#7f1d1d;color:#fca5a5;border:1px solid rgba(252,165,165,.2)}
+.adm-toast.inf{background:var(--surf);color:var(--txt);border:1px solid var(--bord2)}
+@keyframes toast-in{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+ 
+/* MOBILE */
+@media(max-width:768px){
+  :root{--sidebar:0px}
+  .sidebar{transform:translateX(-100%);width:260px}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .mob-toggle{display:flex}
+  .mob-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99;display:none}
+  .mob-overlay.on{display:block}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .info-box{grid-template-columns:1fr}
+  .section{padding:16px}
+  .dash-grid{grid-template-columns:1fr!important}
+}
+@media(min-width:769px){.mob-toggle{display:none!important}.mob-overlay{display:none!important}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">Jd<span>Chou</span></div>
+    <div class="login-sub">Admin Control Panel</div>
+    <div class="login-err" id="loginErr"></div>
+    <label class="lf-label">Email</label>
+    <input class="lf-input" id="lEmail" type="email" placeholder="admin@nyka.shop" autocomplete="username">
+    <label class="lf-label">Password</label>
+    <input class="lf-input" id="lPass" type="password" placeholder="••••••••" autocomplete="current-password">
+    <button class="btn-login" id="loginBtn" onclick="doLogin()">🔐 ចូលប្រព័ន្ធ</button>
+    <div class="login-hint">Default: admin@nyka.shop / admin123</div>
+  </div>
+</div>
+
+<!-- MOBILE OVERLAY -->
+<div class="mob-overlay" id="mobOverlay" onclick="closeSidebar()"></div>
+
+<!-- APP SHELL -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-txt">Jd<span>Chou</span></div>
+      <div class="sb-logo-sub">Admin Panel v4.0</div>
+    </div>
+    <nav class="sb-nav">
+      <span class="sb-sec">ទូទៅ</span>
+      <button class="sb-item on" onclick="goPg('dashboard')"><span class="sb-ico">📊</span>Dashboard</button>
+      <button class="sb-item" onclick="goPg('orders')">
+        <span class="sb-ico">📦</span>Orders
+        <span class="sb-badge" id="pendingBadge" style="display:none">0</span>
+      </button>
+      <button class="sb-item" onclick="goPg('delivery')"><span class="sb-ico">🚚</span>Delivery</button>
+      <span class="sb-sec">គ្រប់គ្រង</span>
+      <button class="sb-item" onclick="goPg('products')"><span class="sb-ico">🛍️</span>Products</button>
+      <button class="sb-item" onclick="goPg('users')"><span class="sb-ico">👤</span>Users</button>
+      <span class="sb-sec">ហិរញ្ញវត្ថុ</span>
+      <button class="sb-item" onclick="goPg('payments')"><span class="sb-ico">💰</span>Payments</button>
+      <button class="sb-item" onclick="goPg('settings')"><span class="sb-ico">⚙️</span>Settings</button>
+    </nav>
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-av" id="sbAv">A</div>
+        <div style="flex:1;min-width:0">
+          <div class="sb-uname" id="sbName">Admin</div>
+          <div class="sb-urole">Administrator</div>
+        </div>
+        <button class="sb-logout" onclick="doLogout()" title="Logout">⏻</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+    <div class="topbar">
+      <button class="tb-btn mob-toggle" onclick="openSidebar()" style="flex-shrink:0">☰</button>
+      <div>
+        <div class="tb-title" id="tbTitle">Dashboard</div>
+        <div class="tb-sub" id="tbSub">NyKa Shop Admin</div>
+      </div>
+      <div class="tb-right">
+        <div class="tb-live"><div class="tb-dot"></div>LIVE</div>
+        <button class="tb-btn" onclick="refreshCurrent()" title="Refresh">↻</button>
+      </div>
+    </div>
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <section class="section on" id="sec-dashboard">
+      <div class="stat-grid">
+        <div class="stat-card sc-rose">
+          <div class="sc-label">💰 Revenue សរុប</div>
+          <div class="sc-val" id="st-rev">$0</div>
+          <div class="sc-trend" id="st-today">ថ្ងៃនេះ $0</div>
+        </div>
+        <div class="stat-card sc-green">
+          <div class="sc-label">✅ Orders Paid</div>
+          <div class="sc-val" id="st-paid">0</div>
+          <div class="sc-trend" id="st-pending-txt">Pending 0</div>
+        </div>
+        <div class="stat-card sc-gold">
+          <div class="sc-label">📦 Orders សរុប</div>
+          <div class="sc-val" id="st-ord">0</div>
+          <div class="sc-trend">ទាំងអស់</div>
+        </div>
+        <div class="stat-card sc-blue">
+          <div class="sc-label">👤 Users</div>
+          <div class="sc-val" id="st-usr">0</div>
+          <div class="sc-trend">គណនីសរុប</div>
+        </div>
+        <div class="stat-card sc-purple">
+          <div class="sc-label">🛍️ Products</div>
+          <div class="sc-val" id="st-prod">0</div>
+          <div class="sc-trend">Active</div>
+        </div>
+      </div>
+      <div class="dash-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card">
+          <div class="card-hd"><div class="card-title">📈 Revenue (7 ថ្ងៃ)</div></div>
+          <div class="chart-wrap"><div class="chart-bars" id="revChart"><div style="color:var(--txt2);font-size:.8rem;align-self:center;width:100%;text-align:center">Loading...</div></div></div>
+        </div>
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">⏳ Pending Orders</div>
+            <button class="btn btn-sm btn-ghost" onclick="goPg('orders')">មើលទាំងអស់ →</button>
+          </div>
+          <div class="tbl-wrap">
+            <table><thead><tr><th>Bill</th><th>អតិថិជន</th><th>ចំនួន</th><th>Action</th></tr></thead>
+            <tbody id="pendingTbl"><tr><td class="empty-row" colspan="4">⏳ Loading...</td></tr></tbody></table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ ORDERS ═══ -->
+    <section class="section" id="sec-orders">
+      <div class="card">
+        <div class="card-hd">
+          <div class="card-title">📦 Orders ទាំងអស់</div>
+          <div class="filter-bar">
+            <div class="search-wrap" style="min-width:180px">
+              <span class="search-ico">🔍</span>
+              <input class="fi" id="orderSearch" placeholder="ស្វែងរក Bill / ឈ្មោះ..." oninput="filterOrders()" style="font-size:.82rem;padding:7px 10px 7px 30px">
+            </div>
+            <div class="ftabs">
+              <button class="ftab on" onclick="setOrderFilter('',this)">ទាំងអស់</button>
+              <button class="ftab" onclick="setOrderFilter('pending',this)">⏳ Pending</button>
+              <button class="ftab" onclick="setOrderFilter('paid',this)">✅ Paid</button>
+              <button class="ftab" onclick="setOrderFilter('delivered',this)">🎉 Delivered</button>
+              <button class="ftab" onclick="setOrderFilter('cancelled',this)">❌ Cancelled</button>
+            </div>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Bill</th><th>អតិថិជន</th><th>ទំនិញ</th><th>ចំនួន</th><th>Status</th><th>ថ្ងៃ</th><th>Action</th></tr></thead>
+            <tbody id="ordersTbl"><tr><td class="empty-row" colspan="8">⏳ Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ DELIVERY ═══ -->
+    <section class="section" id="sec-delivery">
+      <div class="card">
+        <div class="card-hd">
+          <div class="card-title">🚚 Delivery Tracking</div>
+          <div class="ftabs">
+            <button class="ftab on" onclick="setDelFilter('',this)">ទាំងអស់</button>
+            <button class="ftab" onclick="setDelFilter('pending-ship',this)">⏳ Pending Ship</button>
+            <button class="ftab" onclick="setDelFilter('processing',this)">⚙️ Processing</button>
+            <button class="ftab" onclick="setDelFilter('shipped',this)">📦 Shipped</button>
+            <button class="ftab" onclick="setDelFilter('delivered',this)">✅ Delivered</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Bill</th><th>អតិថិជន</th><th>ចំនួន</th><th>Payment</th><th>Progress</th><th>Action</th></tr></thead>
+            <tbody id="deliveryTbl"><tr><td class="empty-row" colspan="6">⏳ Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ PRODUCTS ═══ -->
+    <section class="section" id="sec-products">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div style="font-family:var(--disp);font-size:1.05rem;font-weight:700">🛍️ Products</div>
+        <button class="btn btn-rose" onclick="openProdModal()">＋ Product ថ្មី</button>
+      </div>
+      <div class="prod-grid" id="prodGrid">
+        <div style="color:var(--txt2);text-align:center;padding:40px;grid-column:1/-1">⏳ Loading...</div>
+      </div>
+    </section>
+
+    <!-- ═══ USERS ═══ -->
+    <section class="section" id="sec-users">
+      <div class="card">
+        <div class="card-hd">
+          <div class="card-title">👤 Users ទាំងអស់</div>
+          <div class="search-wrap" style="width:220px">
+            <span class="search-ico">🔍</span>
+            <input class="fi" id="userSearch" placeholder="ស្វែងរក..." oninput="filterUsers()" style="font-size:.82rem;padding:7px 10px 7px 30px">
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>ឈ្មោះ</th><th>Email</th><th>ទូរស័ព្ទ</th><th>Role</th><th>ថ្ងៃចូល</th></tr></thead>
+            <tbody id="usersTbl"><tr><td class="empty-row" colspan="6">⏳ Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ PAYMENTS ═══ -->
+    <section class="section" id="sec-payments">
+      <div class="card">
+        <div class="card-hd"><div class="card-title">💰 Paid Orders</div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Bill</th><th>អតិថិជន</th><th>ចំនួន</th><th>Method</th><th>Status</th><th>Paid At</th><th>Invoice</th></tr></thead>
+            <tbody id="payTbl"><tr><td class="empty-row" colspan="7">⏳ Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SETTINGS ═══ -->
+    <section class="section" id="sec-settings">
+      <div style="max-width:560px;display:flex;flex-direction:column;gap:16px">
+        <div class="card">
+          <div class="card-hd"><div class="card-title">⚙️ Server Status</div></div>
+          <div style="padding:20px 24px" id="settingsInfo">
+            <div style="color:var(--txt2);font-size:.85rem">Loading...</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><div class="card-title">🔗 Quick Links</div></div>
+          <div style="padding:16px 20px;display:flex;flex-direction:column;gap:8px">
+            <a href="/" target="_blank" class="btn btn-ghost" style="justify-content:center">🌸 NyKa Shop →</a>
+            <a href="/api/test" target="_blank" class="btn btn-ghost" style="justify-content:center">🔍 API Health →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ORDER MODAL -->
+<div class="modal-ov" id="orderModal" onclick="if(event.target===this)closeOrderModal()">
+  <div class="modal" style="max-width:660px">
+    <div class="modal-hd">
+      <div class="modal-title" id="orderModalTitle">Order Detail</div>
+      <button class="modal-x" onclick="closeOrderModal()">✕</button>
+    </div>
+    <div class="modal-body" id="orderModalBody"></div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost" onclick="closeOrderModal()">បិទ</button>
+      <button class="btn btn-confirm" id="confirmPayBtn" onclick="confirmPayment()" style="display:none">✅ Confirm Payment</button>
+      <button class="btn btn-rose" onclick="saveOrderStatus()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="modal-ov" id="prodModal" onclick="if(event.target===this)closeProdModal()">
+  <div class="modal" style="max-width:720px">
+    <div class="modal-hd">
+      <div class="modal-title" id="prodModalTitle">Product ថ្មី</div>
+      <button class="modal-x" onclick="closeProdModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="fg" style="grid-column:1/-1">
+          <label>ឈ្មោះ Product *</label>
+          <input class="fi" id="pf-name" placeholder="e.g. Vitamin C Serum">
+        </div>
+        <div class="fg"><label>Brand</label><input class="fi" id="pf-brand" placeholder="e.g. The Ordinary"></div>
+        <div class="fg"><label>Category</label>
+          <select class="fi" id="pf-cat">
+            <option value="">— ជ្រើស —</option>
+            <option value="skincare">Skincare</option>
+            <option value="makeup">Makeup</option>
+            <option value="haircare">Haircare</option>
+            <option value="bodycare">Body Care</option>
+            <option value="sunscreen">Sunscreen</option>
+            <option value="fragrance">Fragrance</option>
+          </select>
+        </div>
+        <div class="fg"><label>តម្លៃ USD *</label><input class="fi" id="pf-price" type="number" step="0.01" placeholder="0.00"></div>
+        <div class="fg"><label>តម្លៃចាស់</label><input class="fi" id="pf-old" type="number" step="0.01" placeholder="0.00"></div>
+        <div class="fg"><label>Stock</label><input class="fi" id="pf-stock" type="number" placeholder="100"></div>
+        <div class="fg"><label>Badge</label><input class="fi" id="pf-badge" placeholder="NEW / HOT / SALE"></div>
+        <div class="fg"><label>Icon 🌸</label><input class="fi" id="pf-icon" placeholder="🌸" maxlength="4"></div>
+        <div class="fg"><label>Rating</label><input class="fi" id="pf-rating" type="number" step="0.1" min="1" max="5" placeholder="4.5"></div>
+        <div class="fg" style="grid-column:1/-1">
+          <label>Description</label>
+          <textarea class="fi" id="pf-desc" rows="3" placeholder="ពណ៌នា product..."></textarea>
+        </div>
+        <div class="fg" style="grid-column:1/-1">
+          <label>Specs (1 ក្នុង 1 row)</label>
+          <textarea class="fi" id="pf-specs" rows="3" placeholder="100ml&#10;SPF50+&#10;Paraben-free"></textarea>
+        </div>
+        <div class="fg" style="grid-column:1/-1">
+          <label>រូបភាព</label>
+          <input type="file" id="pf-img-input" accept="image/*" multiple style="display:none" onchange="handleImgUpload(this)">
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('pf-img-input').click()">📷 Upload រូបភាព</button>
+          <div class="img-grid" id="pf-img-preview"></div>
+        </div>
+        <div class="fg" style="grid-column:1/-1">
+          <label>Status</label>
+          <select class="fi" id="pf-active">
+            <option value="1">✅ Active</option>
+            <option value="0">❌ Inactive</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-ghost" onclick="closeProdModal()">បោះបង់</button>
+      <button class="btn btn-rose" id="saveProdBtn" onclick="saveProd()">💾 រក្សាទុក</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toastWrap"></div>
+
+<script>
+'use strict';
+
+const SRV = '';
+const DELIVERY_STEPS = [
+  { key:'processing', label:'Processing', ico:'⚙️' },
+  { key:'packed',     label:'Packed',     ico:'📦' },
+  { key:'shipped',    label:'Shipped',    ico:'🚚' },
+  { key:'out',        label:'Out',        ico:'🛵' },
+  { key:'delivered',  label:'Delivered',  ico:'✅' },
+];
+
+let token       = localStorage.getItem('nyka_admin_token') || '';
+let adminUser   = null;
+let orders      = [], users = [], products = [];
+let currentOrderId = null;
+let currentProdId  = null;
+let currentProdImgs = [];
+let orderFilter = '', orderSearch = '';
+let delFilter   = '';
+let curPage     = 'dashboard';
+
+// ── AUTH ────────────────────────────────────────────────
+function authH() {
+  return { 'Content-Type':'application/json', 'Authorization':'Bearer ' + token };
+}
+
+async function doLogin() {
+  const email = document.getElementById('lEmail').value.trim();
+  const pass  = document.getElementById('lPass').value;
+  const err   = document.getElementById('loginErr');
+  err.classList.remove('on');
+  if (!email || !pass) { err.textContent = 'សូមបំពេញ Email និង Password'; err.classList.add('on'); return; }
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = '⏳ Loading...';
+  try {
+    const r = await fetch(`${SRV}/api/admin/login`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, password: pass })
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.message || 'Login failed');
+    token = d.token; adminUser = d.user;
+    localStorage.setItem('nyka_admin_token', token);
+    mountAdmin();
+  } catch(e) {
+    err.textContent = e.message; err.classList.add('on');
+    btn.disabled = false; btn.textContent = '🔐 ចូលប្រព័ន្ធ';
+  }
+}
+document.getElementById('lPass').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
+
+function doLogout() { localStorage.removeItem('nyka_admin_token'); location.reload(); }
+
+async function mountAdmin() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').classList.add('on');
+  if (adminUser) {
+    document.getElementById('sbName').textContent = adminUser.name || 'Admin';
+    document.getElementById('sbAv').textContent   = (adminUser.name||'A')[0].toUpperCase();
+  }
+  await loadAll();
+  goPg('dashboard');
+  setInterval(async () => {
+    await loadOrders();
+    updatePendingBadge();
+    if (curPage==='dashboard') renderPendingDash();
+    if (curPage==='orders')    renderOrdersTbl();
+  }, 30000);
+}
+
+// Auto-login
+(async () => {
+  if (!token) return;
+  try {
+    const r = await fetch(`${SRV}/api/admin/stats`, { headers: authH() });
+    const d = await r.json();
+    if (d.success) { await mountAdmin(); }
+    else { localStorage.removeItem('nyka_admin_token'); token = ''; }
+  } catch {}
+})();
+
+// ── NAVIGATION ──────────────────────────────────────────
+const PAGE_META = {
+  dashboard:{ title:'Dashboard', sub:'Overview & Stats' },
+  orders:   { title:'Orders',    sub:'ការបញ្ជាទិញ' },
+  delivery: { title:'Delivery',  sub:'ស្ថានភាពដឹក' },
+  products: { title:'Products',  sub:'ផលិតផល' },
+  users:    { title:'Users',     sub:'អតិថិជន' },
+  payments: { title:'Payments',  sub:'ការបង់ប្រាក់' },
+  settings: { title:'Settings',  sub:'ប្រព័ន្ធ' },
+};
+
+function goPg(pg) {
+  curPage = pg;
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('on'));
+  const sec = document.getElementById('sec-'+pg);
+  if (sec) sec.classList.add('on');
+  const meta = PAGE_META[pg] || { title: pg, sub: '' };
+  document.getElementById('tbTitle').textContent = meta.title;
+  document.getElementById('tbSub').textContent   = meta.sub;
+  // Mark active sidebar item
+  document.querySelectorAll('.sb-item').forEach(b => {
+    const oc = b.getAttribute('onclick') || '';
+    if (oc.includes(`'${pg}'`)) b.classList.add('on');
+  });
+  const actions = {
+    dashboard: () => { loadStats(); loadChart(); renderPendingDash(); },
+    orders:    renderOrdersTbl,
+    delivery:  renderDeliveryTbl,
+    products:  renderProdGrid,
+    users:     () => renderUsersTbl(),
+    payments:  renderPaymentsTbl,
+    settings:  loadSettings,
+  };
+  if (actions[pg]) actions[pg]();
+  closeSidebar();
+}
+
+function refreshCurrent() { goPg(curPage); }
+
+// ── SIDEBAR MOBILE ───────────────────────────────────────
+function openSidebar()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('mobOverlay').classList.add('on'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('mobOverlay').classList.remove('on'); }
+
+// ── LOAD ALL DATA ────────────────────────────────────────
+async function loadAll() {
+  await Promise.all([ loadStats(), loadChart(), loadOrders(), loadUsers(), loadProducts() ]);
+}
+
+// ── STATS ────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const r = await fetch(`${SRV}/api/admin/stats`, { headers: authH() });
+    const d = await r.json();
+    if (!d.success) return;
+    const s = d.stats;
+    document.getElementById('st-rev').textContent  = '$' + parseFloat(s.total_revenue||0).toFixed(2);
+    document.getElementById('st-paid').textContent = s.paid_orders    || 0;
+    document.getElementById('st-ord').textContent  = s.total_orders   || 0;
+    document.getElementById('st-usr').textContent  = s.total_users    || 0;
+    document.getElementById('st-prod').textContent = s.total_products || 0;
+    document.getElementById('st-today').textContent      = 'ថ្ងៃនេះ $' + parseFloat(s.today_revenue||0).toFixed(2);
+    document.getElementById('st-pending-txt').textContent = 'Pending ' + (s.pending_orders||0);
+  } catch {}
+}
+
+// ── REVENUE CHART ────────────────────────────────────────
+async function loadChart() {
+  try {
+    const r = await fetch(`${SRV}/api/admin/revenue-chart`, { headers: authH() });
+    const d = await r.json();
+    if (!d.success || !d.data.length) {
+      document.getElementById('revChart').innerHTML = '<div style="color:var(--txt2);font-size:.8rem;align-self:center;width:100%;text-align:center">គ្មានទិន្នន័យ</div>';
+      return;
+    }
+    const max = Math.max(...d.data.map(x => +x.revenue), 1);
+    document.getElementById('revChart').innerHTML = d.data.map(row => {
+      const pct = Math.max(4, (+row.revenue / max) * 100);
+      const day = new Date(row.date).toLocaleDateString('km-KH', { month:'short', day:'numeric' });
+      return `<div class="chart-col">
+        <div class="chart-amt">$${(+row.revenue).toFixed(0)}</div>
+        <div class="chart-bar" style="height:${pct}%" title="$${(+row.revenue).toFixed(2)}"></div>
+        <div class="chart-lbl">${day}</div>
+      </div>`;
+    }).join('');
+  } catch {}
+}
+
+// ── ORDERS ───────────────────────────────────────────────
+async function loadOrders() {
+  try {
+    const r = await fetch(`${SRV}/api/admin/orders`, { headers: authH() });
+    const d = await r.json();
+    if (d.success) orders = d.orders || [];
+    updatePendingBadge();
+  } catch {}
+}
+
+function updatePendingBadge() {
+  const n = orders.filter(o => o.status === 'pending').length;
+  const badge = document.getElementById('pendingBadge');
+  badge.textContent  = n;
+  badge.style.display = n > 0 ? 'flex' : 'none';
+}
+
+function setOrderFilter(f, btn) {
+  orderFilter = f;
+  document.querySelectorAll('#sec-orders .ftab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderOrdersTbl();
+}
+
+function filterOrders() {
+  orderSearch = document.getElementById('orderSearch').value;
+  renderOrdersTbl();
+}
+
+function renderOrdersTbl() {
+  const list = orders.filter(o => {
+    const matchS = !orderFilter || o.status === orderFilter;
+    const q = orderSearch.toLowerCase();
+    const matchQ = !q ||
+      (o.user_name||'').toLowerCase().includes(q) ||
+      (o.user_email||'').toLowerCase().includes(q) ||
+      (o.order_number||'').toLowerCase().includes(q) ||
+      (o.bill_number||'').toLowerCase().includes(q);
+    return matchS && matchQ;
+  });
+  const tbody = document.getElementById('ordersTbl');
+  if (!list.length) { tbody.innerHTML = `<tr><td class="empty-row" colspan="8">គ្មាន Orders</td></tr>`; return; }
+  tbody.innerHTML = list.map(o => `
+    <tr>
+      <td class="td-mono" style="color:var(--txt2)">#${o.id}</td>
+      <td class="td-mono" style="color:var(--rose-lt);font-size:.74rem">${o.order_number||o.bill_number||'—'}</td>
+      <td>
+        <div style="font-weight:600;font-size:.82rem">${escHtml(o.user_name||'Guest')}</div>
+        <div style="font-size:.72rem;color:var(--txt2)">${escHtml(o.user_email||'—')}</div>
+      </td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.78rem;color:var(--txt2)">
+        ${(o.items||[]).map(i=>`${i.icon||''}${escHtml(i.name||'')}`).join(', ')||'—'}
+      </td>
+      <td class="td-mono" style="color:var(--green);font-weight:700">$${parseFloat(o.total_amount||0).toFixed(2)}</td>
+      <td>${statusBadge(o.status)}</td>
+      <td class="td-mono" style="color:var(--txt2);font-size:.72rem">${fmtDate(o.created_at)}</td>
+      <td><button class="btn btn-blue btn-sm" onclick="openOrderModal(${o.id})">👁 Detail</button></td>
+    </tr>`).join('');
+}
+
+function renderPendingDash() {
+  const list = orders.filter(o => o.status === 'pending').slice(0, 8);
+  const tbody = document.getElementById('pendingTbl');
+  if (!list.length) { tbody.innerHTML = `<tr><td class="empty-row" colspan="4">🎉 គ្មាន Pending</td></tr>`; return; }
+  tbody.innerHTML = list.map(o => `
+    <tr>
+      <td class="td-mono" style="color:var(--rose-lt);font-size:.72rem">${o.bill_number||o.order_number}</td>
+      <td style="font-size:.82rem">${escHtml(o.user_name||'Guest')}</td>
+      <td class="td-mono" style="color:var(--green);font-weight:700">$${parseFloat(o.total_amount||0).toFixed(2)}</td>
+      <td><button class="btn btn-confirm btn-sm" onclick="openOrderModal(${o.id})">✅ Confirm</button></td>
+    </tr>`).join('');
+}
+
+// ── ORDER MODAL ──────────────────────────────────────────
+function openOrderModal(id) {
+  const o = orders.find(x => x.id === id || x.id === +id);
+  if (!o) return;
+  currentOrderId = id;
+  document.getElementById('orderModalTitle').textContent = 'Order: ' + (o.order_number||o.bill_number||'—');
+
+  const delCur = o.delivery_status || '';
+  const delIdx = DELIVERY_STEPS.findIndex(s => s.key === delCur);
+
+  const itemsHtml = (o.items||[]).map(i => `
+    <div class="oi-row">
+      <div>${i.icon||'📦'} ${escHtml(i.name||'?')} <span style="color:var(--txt2)">×${i.qty||1}</span></div>
+      <div class="td-mono" style="color:var(--green)">$${((+(i.price||0))*(i.qty||1)).toFixed(2)}</div>
+    </div>`).join('') || '<div style="color:var(--txt2);font-size:.8rem;padding:8px 0">គ្មានទំនិញ</div>';
+
+  const deliverySection = (delCur || o.status==='paid' || o.status==='delivered') ? `
+    <div style="margin-bottom:16px">
+      <div style="font-size:.65rem;color:var(--txt2);font-family:var(--mono);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">DELIVERY</div>
+      <div class="del-track">
+        ${DELIVERY_STEPS.map((s,i) => `
+          <div class="del-step ${i < delIdx ? 'done' : i === delIdx ? 'active' : ''}">
+            <div class="del-dot">${i < delIdx ? '✓' : s.ico}</div>
+            <div class="del-label">${s.label}</div>
+          </div>`).join('')}
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        ${DELIVERY_STEPS.map(s => `
+          <button class="btn btn-sm ${delCur===s.key?'btn-rose':'btn-ghost'}" onclick="quickDelStep(${o.id},'${s.key}')">${s.ico} ${s.label}</button>
+        `).join('')}
+      </div>
+    </div>` : '';
+
+  document.getElementById('orderModalBody').innerHTML = `
+    <div class="info-box">
+      <div class="info-cell">
+        <div class="info-lbl">អតិថិជន</div>
+        <div class="info-val">${escHtml(o.user_name||'Guest')}</div>
+        <div style="font-size:.78rem;color:var(--txt2);margin-top:3px">${escHtml(o.user_email||'—')}</div>
+        <div style="font-size:.78rem;color:var(--txt2)">${escHtml(o.user_phone||'—')}</div>
+      </div>
+      <div class="info-cell">
+        <div class="info-lbl">Payment Info</div>
+        <div class="info-val mono">${escHtml(o.bill_number||'—')}</div>
+        <div style="font-size:.78rem;color:var(--txt2);margin-top:3px">${fmtDate(o.created_at)}</div>
+        <div style="margin-top:6px">${statusBadge(o.status)}</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px">
+      <div style="font-size:.65rem;color:var(--txt2);font-family:var(--mono);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">ITEMS</div>
+      ${itemsHtml}
+      <div class="oi-row" style="font-weight:700;margin-top:4px">
+        <div>💰 សរុប</div>
+        <div class="td-mono" style="color:var(--rose-lt)">$${parseFloat(o.total_amount||0).toFixed(2)}</div>
+      </div>
+    </div>
+
+    ${deliverySection}
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="fg"><label>Status</label>
+        <select class="fi" id="om-status">
+          <option value="pending"   ${o.status==='pending'   ?'selected':''}>⏳ Pending</option>
+          <option value="paid"      ${o.status==='paid'      ?'selected':''}>✅ Paid</option>
+          <option value="delivered" ${o.status==='delivered' ?'selected':''}>🎉 Delivered</option>
+          <option value="cancelled" ${o.status==='cancelled' ?'selected':''}>❌ Cancelled</option>
+          <option value="refunded"  ${o.status==='refunded'  ?'selected':''}>↩️ Refunded</option>
+        </select>
+      </div>
+      <div class="fg"><label>Delivery Status</label>
+        <select class="fi" id="om-delivery">
+          <option value="">—</option>
+          ${DELIVERY_STEPS.map(s => `<option value="${s.key}" ${delCur===s.key?'selected':''}>${s.ico} ${s.label}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label>Notes</label>
+      <textarea class="fi" id="om-notes" rows="2" placeholder="Notes...">${escHtml(o.notes||'')}</textarea>
+    </div>
+    ${o.status==='paid'||o.status==='delivered' ? `
+      <div style="margin-top:4px">
+        <a href="/api/invoice/${o.bill_number}" target="_blank" class="btn btn-ghost btn-sm">🧾 មើល Invoice</a>
+      </div>` : ''}
+  `;
+
+  // Show Confirm button only for pending orders
+  document.getElementById('confirmPayBtn').style.display = o.status === 'pending' ? 'inline-flex' : 'none';
+  document.getElementById('orderModal').classList.add('on');
+}
+
+function closeOrderModal() { document.getElementById('orderModal').classList.remove('on'); }
+
+async function saveOrderStatus() {
+  if (!currentOrderId) return;
+  const status          = document.getElementById('om-status')?.value;
+  const delivery_status = document.getElementById('om-delivery')?.value;
+  const notes           = document.getElementById('om-notes')?.value;
+  try {
+    const r = await fetch(`${SRV}/api/admin/orders/${currentOrderId}/status`, {
+      method:'PUT', headers: authH(),
+      body: JSON.stringify({ status, delivery_status, notes })
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.message);
+    toast('✅ Order updated!', 'ok');
+    closeOrderModal();
+    await loadOrders();
+    if (curPage==='dashboard') renderPendingDash();
+    if (curPage==='orders')    renderOrdersTbl();
+    if (curPage==='delivery')  renderDeliveryTbl();
+    if (curPage==='payments')  renderPaymentsTbl();
+  } catch(e) { toast('❌ ' + e.message, 'er'); }
+}
+
+async function confirmPayment() {
+  if (!currentOrderId) return;
+  const o = orders.find(x => x.id === currentOrderId || x.id === +currentOrderId);
+  if (!o || !o.bill_number) { toast('❌ រកមិនឃើញ bill number', 'er'); return; }
+  const btn = document.getElementById('confirmPayBtn');
+  btn.disabled = true; btn.textContent = '⏳ Processing...';
+  try {
+    const r = await fetch(`${SRV}/api/bakong/confirm/${o.bill_number}`, {
+      method:'POST', headers: authH()
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.message || 'Failed');
+    toast('✅ Payment Confirmed! Invoice sent.', 'ok');
+    closeOrderModal();
+    await loadOrders();
+    renderPendingDash();
+    renderOrdersTbl();
+  } catch(e) {
+    toast('❌ ' + e.message, 'er');
+    btn.disabled = false; btn.textContent = '✅ Confirm Payment';
+  }
+}
+
+async function quickDelStep(orderId, step) {
+  try {
+    const body = { delivery_status: step };
+    if (step === 'delivered') body.status = 'delivered';
+    const r = await fetch(`${SRV}/api/admin/orders/${orderId}/status`, {
+      method:'PUT', headers: authH(), body: JSON.stringify(body)
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.message);
+    toast(`${DELIVERY_STEPS.find(s=>s.key===step)?.ico||'✅'} Updated!`, 'ok');
+    await loadOrders();
+    openOrderModal(orderId);
+    if (curPage==='delivery') renderDeliveryTbl();
+  } catch(e) { toast('❌ '+e.message,'er'); }
+}
+
+// ── DELIVERY ─────────────────────────────────────────────
+function setDelFilter(f, btn) {
+  delFilter = f;
+  document.querySelectorAll('#sec-delivery .ftab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderDeliveryTbl();
+}
+
+function renderDeliveryTbl() {
+  const list = orders.filter(o => {
+    const active = o.status==='paid' || o.status==='delivered' || o.delivery_status;
+    if (!active) return false;
+    if (!delFilter) return true;
+    if (delFilter==='pending-ship') return o.status==='paid' && !o.delivery_status;
+    return (o.delivery_status||o.status) === delFilter;
+  });
+  const tbody = document.getElementById('deliveryTbl');
+  if (!list.length) { tbody.innerHTML = `<tr><td class="empty-row" colspan="6">គ្មាន Orders</td></tr>`; return; }
+  tbody.innerHTML = list.map(o => {
+    const curStep = o.delivery_status || '';
+    const idx     = DELIVERY_STEPS.findIndex(s => s.key === curStep);
+    const pct     = idx >= 0 ? Math.round(((idx+1)/DELIVERY_STEPS.length)*100) : 5;
+    const stepInfo = DELIVERY_STEPS.find(s=>s.key===curStep);
+    return `<tr>
+      <td class="td-mono" style="color:var(--rose-lt);font-size:.72rem">${o.bill_number||o.order_number}</td>
+      <td>
+        <div style="font-weight:600;font-size:.82rem">${escHtml(o.user_name||'Guest')}</div>
+        <div style="font-size:.72rem;color:var(--txt2)">${escHtml(o.user_phone||'—')}</div>
+      </td>
+      <td class="td-mono" style="color:var(--green)">$${parseFloat(o.total_amount||0).toFixed(2)}</td>
+      <td>${statusBadge(o.status)}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+          <span style="font-size:.68rem;color:var(--txt2);font-family:var(--mono);white-space:nowrap">${stepInfo ? stepInfo.ico+' '+stepInfo.label : '—'}</span>
+        </div>
+      </td>
+      <td>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
+          ${DELIVERY_STEPS.slice(0,3).map(s=>`
+            <button class="btn btn-sm ${curStep===s.key?'btn-rose':'btn-ghost'}" style="padding:4px 7px;font-size:.65rem" onclick="quickDelStep(${o.id},'${s.key}')">${s.ico}</button>
+          `).join('')}
+          <button class="btn btn-blue btn-sm" style="font-size:.68rem" onclick="openOrderModal(${o.id})">Detail</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── PRODUCTS ─────────────────────────────────────────────
+async function loadProducts() {
+  try {
+    const r = await fetch(`${SRV}/api/admin/products`, { headers: authH() });
+    const d = await r.json();
+    if (d.success) products = d.products || [];
+  } catch {}
+}
+
+function renderProdGrid() {
+  const grid = document.getElementById('prodGrid');
+  if (!products.length) {
+    grid.innerHTML = `<div style="color:var(--txt2);text-align:center;padding:40px;grid-column:1/-1">គ្មាន Products — ចុច "+ Product ថ្មី"</div>`;
+    return;
+  }
+  grid.innerHTML = products.map(p => {
+    const img = (p.images||[])[0];
+    return `<div class="prod-card">
+      <div class="prod-img">${img ? `<img src="${img}" alt="${escHtml(p.name)}" loading="lazy">` : (p.icon||'🌸')}</div>
+      <div class="prod-body">
+        <div class="prod-name">${escHtml(p.name)}</div>
+        <div class="prod-brand">${escHtml(p.brand||'—')} · ${p.category||'—'}</div>
+        <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px">
+          <span class="prod-price">$${parseFloat(p.price||0).toFixed(2)}</span>
+          ${p.old_price ? `<span style="font-size:.75rem;color:var(--txt2);text-decoration:line-through">$${parseFloat(p.old_price).toFixed(2)}</span>` : ''}
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          ${p.badge ? `<span class="badge badge-rose">${escHtml(p.badge)}</span>` : ''}
+          <span class="badge ${p.active ? 'badge-green':'badge-mut'}">${p.active?'Active':'Inactive'}</span>
+          <span class="badge badge-mut">Stock ${p.stock||0}</span>
+        </div>
+      </div>
+      <div class="prod-foot">
+        <span style="font-size:.72rem;color:var(--txt2);font-family:var(--mono)">⭐ ${p.rating||4.5} (${p.reviews||0})</span>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-blue btn-sm" onclick="editProd(${p.id})">✏️ Edit</button>
+          <button class="btn btn-red btn-sm" onclick="deleteProd(${p.id})">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openProdModal() {
+  currentProdId   = null;
+  currentProdImgs = [];
+  document.getElementById('prodModalTitle').textContent = 'Product ថ្មី';
+  ['pf-name','pf-brand','pf-price','pf-old','pf-badge','pf-icon','pf-desc','pf-specs'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('pf-stock').value  = '100';
+  document.getElementById('pf-rating').value = '4.5';
+  document.getElementById('pf-cat').value    = '';
+  document.getElementById('pf-active').value = '1';
+  document.getElementById('pf-img-preview').innerHTML = '';
+  document.getElementById('pf-img-input').value = '';
+  document.getElementById('prodModal').classList.add('on');
+}
+
+function editProd(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  currentProdId   = id;
+  currentProdImgs = [...(p.images||[])];
+  document.getElementById('prodModalTitle').textContent = 'Edit: ' + p.name;
+  document.getElementById('pf-name').value   = p.name        || '';
+  document.getElementById('pf-brand').value  = p.brand       || '';
+  document.getElementById('pf-price').value  = p.price       || '';
+  document.getElementById('pf-old').value    = p.old_price   || '';
+  document.getElementById('pf-stock').value  = p.stock       || 100;
+  document.getElementById('pf-badge').value  = p.badge       || '';
+  document.getElementById('pf-icon').value   = p.icon        || '🌸';
+  document.getElementById('pf-rating').value = p.rating      || 4.5;
+  document.getElementById('pf-desc').value   = p.description || '';
+  document.getElementById('pf-specs').value  = (p.specs||[]).join('\n');
+  document.getElementById('pf-cat').value    = p.category    || '';
+  document.getElementById('pf-active').value = p.active != null ? String(p.active) : '1';
+  renderImgPreviews();
+  document.getElementById('prodModal').classList.add('on');
+}
+
+function closeProdModal() { document.getElementById('prodModal').classList.remove('on'); }
+
+function handleImgUpload(input) {
+  Array.from(input.files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => { currentProdImgs.push(e.target.result); renderImgPreviews(); };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderImgPreviews() {
+  document.getElementById('pf-img-preview').innerHTML = currentProdImgs.map((src,i) => `
+    <div class="img-thumb">
+      <img src="${src}" alt="img">
+      <button class="img-rm" onclick="removeImg(${i})">✕</button>
+    </div>`).join('');
+}
+
+function removeImg(i) { currentProdImgs.splice(i,1); renderImgPreviews(); }
+
+async function saveProd() {
+  const name  = document.getElementById('pf-name').value.trim();
+  const price = document.getElementById('pf-price').value;
+  if (!name || !price) { toast('❌ ត្រូវការ ឈ្មោះ និង តម្លៃ', 'er'); return; }
+  const specs = document.getElementById('pf-specs').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const body  = {
+    name, price: +price,
+    brand:       document.getElementById('pf-brand').value.trim(),
+    old_price:   document.getElementById('pf-old').value   || null,
+    stock:       +document.getElementById('pf-stock').value || 100,
+    badge:       document.getElementById('pf-badge').value.trim(),
+    icon:        document.getElementById('pf-icon').value.trim() || '🌸',
+    rating:      +document.getElementById('pf-rating').value || 4.5,
+    description: document.getElementById('pf-desc').value.trim(),
+    category:    document.getElementById('pf-cat').value,
+    specs:       JSON.stringify(specs),
+    images:      JSON.stringify(currentProdImgs),
+    active:      +document.getElementById('pf-active').value,
+  };
+  const btn = document.getElementById('saveProdBtn');
+  btn.disabled = true; btn.textContent = '⏳ Saving...';
+  try {
+    const url    = currentProdId ? `${SRV}/api/admin/products/${currentProdId}` : `${SRV}/api/admin/products`;
+    const method = currentProdId ? 'PUT' : 'POST';
+    const r = await fetch(url, { method, headers: authH(), body: JSON.stringify(body) });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.message);
+    toast(`✅ Product ${currentProdId?'updated':'created'}!`, 'ok');
+    closeProdModal();
+    await loadProducts();
+    renderProdGrid();
+  } catch(e) { toast('❌ '+e.message,'er'); }
+  btn.disabled = false; btn.textContent = '💾 រក្សាទុក';
+}
+
+async function deleteProd(id) {
+  const p = products.find(x=>x.id===id);
+  if (!p || !confirm(`❌ លុប "${p.name}" ?`)) return;
+  try {
+    const r = await fetch(`${SRV}/api/admin/products/${id}`, { method:'DELETE', headers: authH() });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.message);
+    toast('🗑 Deleted!', 'ok');
+    await loadProducts(); renderProdGrid();
+  } catch(e) { toast('❌ '+e.message,'er'); }
+}
+
+// ── USERS ────────────────────────────────────────────────
+async function loadUsers() {
+  try {
+    const r = await fetch(`${SRV}/api/admin/users`, { headers: authH() });
+    const d = await r.json();
+    if (d.success) users = d.users || [];
+  } catch {}
+}
+
+function filterUsers() {
+  const q = document.getElementById('userSearch').value.toLowerCase();
+  renderUsersTbl(q ? users.filter(u => (u.name||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q)) : users);
+}
+
+function renderUsersTbl(list) {
+  const rows  = list || users;
+  const tbody = document.getElementById('usersTbl');
+  if (!rows.length) { tbody.innerHTML = `<tr><td class="empty-row" colspan="6">គ្មាន Users</td></tr>`; return; }
+  tbody.innerHTML = rows.map(u => `
+    <tr>
+      <td class="td-mono" style="color:var(--txt2)">${u.id}</td>
+      <td style="font-weight:600">${escHtml(u.name||'—')}</td>
+      <td class="td-mono" style="font-size:.78rem">${escHtml(u.email||'—')}</td>
+      <td style="font-size:.82rem;color:var(--txt2)">${u.phone||'—'}</td>
+      <td><span class="badge ${u.role==='admin'?'badge-rose':'badge-blue'}">${u.role}</span></td>
+      <td class="td-mono" style="color:var(--txt2);font-size:.72rem">${fmtDate(u.created_at)}</td>
+    </tr>`).join('');
+}
+
+// ── PAYMENTS ─────────────────────────────────────────────
+function renderPaymentsTbl() {
+  const paid  = orders.filter(o => o.status==='paid'||o.status==='delivered');
+  const tbody = document.getElementById('payTbl');
+  if (!paid.length) { tbody.innerHTML = `<tr><td class="empty-row" colspan="7">គ្មាន Payments</td></tr>`; return; }
+  tbody.innerHTML = paid.map(o => `
+    <tr>
+      <td class="td-mono" style="color:var(--rose-lt);font-size:.72rem">${escHtml(o.bill_number||'—')}</td>
+      <td>
+        <div style="font-weight:600;font-size:.82rem">${escHtml(o.user_name||'Guest')}</div>
+        <div style="font-size:.72rem;color:var(--txt2)">${escHtml(o.user_email||'—')}</div>
+      </td>
+      <td class="td-mono" style="color:var(--green);font-weight:700">$${parseFloat(o.total_amount||0).toFixed(2)}</td>
+      <td><span class="badge badge-teal">${o.payment_method||'telegram'}</span></td>
+      <td>${statusBadge(o.status)}</td>
+      <td class="td-mono" style="color:var(--txt2);font-size:.72rem">${fmtDate(o.paid_at||o.created_at)}</td>
+      <td>${o.bill_number ? `<a href="/api/invoice/${o.bill_number}" target="_blank" class="btn btn-ghost btn-sm">🧾 Invoice</a>` : '—'}</td>
+    </tr>`).join('');
+}
+
+// ── SETTINGS ─────────────────────────────────────────────
+async function loadSettings() {
+  try {
+    const r = await fetch(`${SRV}/api/test`);
+    const d = await r.json();
+    document.getElementById('settingsInfo').innerHTML = `
+      <div style="display:grid;gap:10px;font-size:.85rem;font-family:var(--mono)">
+        <div>🟢 Server: <span style="color:var(--green)">Online</span></div>
+        <div>🗄️ Database: <span style="color:${d.db?'var(--green)':'var(--red)'}">${d.db?'Connected':'Offline'}</span></div>
+        <div>💬 Telegram: <span style="color:var(--blue)">Active</span></div>
+        <div>🕐 Server Time: <span style="color:var(--gold)">${new Date(d.time).toLocaleString('km-KH')}</span></div>
+      </div>`;
+  } catch {
+    document.getElementById('settingsInfo').innerHTML = '<div style="color:var(--red);font-size:.85rem">❌ Server Offline</div>';
+  }
+}
+
+// ── HELPERS ──────────────────────────────────────────────
+function statusBadge(s) {
+  const map = {
+    pending:   '<span class="badge badge-gold"><span class="badge-dot"></span>Pending</span>',
+    paid:      '<span class="badge badge-green"><span class="badge-dot"></span>Paid</span>',
+    delivered: '<span class="badge badge-blue"><span class="badge-dot"></span>Delivered</span>',
+    cancelled: '<span class="badge badge-red"><span class="badge-dot"></span>Cancelled</span>',
+    refunded:  '<span class="badge badge-mut"><span class="badge-dot"></span>Refunded</span>',
+  };
+  return map[s] || `<span class="badge badge-mut">${s||'—'}</span>`;
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  try { return new Date(d).toLocaleDateString('km-KH',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}); }
+  catch { return d; }
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toast(msg, type='inf') {
+  const w  = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className   = `adm-toast ${type}`;
+  el.textContent = msg;
+  w.appendChild(el);
+  setTimeout(() => {
+    el.style.opacity   = '0';
+    el.style.transform = 'translateX(12px)';
+    el.style.transition = '.3s';
+    setTimeout(() => el.remove(), 300);
+  }, 3500);
+}
+</script>
+</body>
+</html>
