@@ -1152,7 +1152,8 @@ body.drawer-open{overflow:hidden}
 
 <script>
 'use strict';
-const SRV = (location.hostname==='localhost'||location.hostname==='127.0.0.1') ? 'http://localhost:5000' : '';
+// ប្តូរទៅ '' ដើម្បីឱ្យវាហៅ API លើ domain តែមួយជាមួយ frontend (Cloudflare)
+const SRV = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
 
 // ── STATE ──────────────────────────────────────────
 let PRODS = [];
