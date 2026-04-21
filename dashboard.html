@@ -484,7 +484,8 @@ textarea.fi{resize:vertical;min-height:72px}
 <script>
 'use strict';
 // ─── CONFIG ─────────────────────────────────────────────
-const SRV = (location.hostname==='localhost'||location.hostname==='127.0.0.1') ? 'http://localhost:5000' : '';
+// ប្តូរទៅ '' ដើម្បីឱ្យវាហៅ API លើ domain តែមួយជាមួយ frontend (Cloudflare)
+const SRV = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
 
 // ─── STATE ──────────────────────────────────────────────
 let user = JSON.parse(localStorage.getItem('kt_user') || 'null');
@@ -515,7 +516,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 // 🔧 BUG 2 FIX: sync fresh user data ពី server
 async function fetchUserProfile() {
   try {
-    const r = await fetch(`${SRV}/api/auth/profile`, {
+    const r = await fetch(`${SRV}/api/user`, {
       headers: { 'Authorization': 'Bearer ' + tok }
     });
     if (r.status === 401 || r.status === 403) {
@@ -741,7 +742,7 @@ async function saveProfile() {
     const body = { name, phone, address };
     if (pw) body.password = pw;
 
-    const r = await fetch(`${SRV}/api/auth/profile`, {
+    const r = await fetch(`${SRV}/api/user/update`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
