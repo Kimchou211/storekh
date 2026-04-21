@@ -867,8 +867,11 @@ app.use(express.static('.'));
 //  START
 // ═══════════════════════════════════════════════════════════════
 async function start() {
-  await seedAdmin();
-  await registerWebhook();
+  // កុំឱ្យវា run រាល់ពេលនៅលើ Cloudflare ដើម្បីកុំឱ្យយឺត
+  if (typeof process !== 'undefined' && process.env.NODE_ENV === 'development') {
+    await seedAdmin();
+    await registerWebhook();
+  }
 
   // app.listen ដំណើរការតែលើ Local Node.js ប៉ុណ្ណោះ
   if (typeof process !== 'undefined' && process.release && process.release.name === 'node') {

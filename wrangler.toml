@@ -4,9 +4,8 @@ main = "server.js"
 compatibility_date = "2024-04-01"
 
 [assets]
-directory = "."
+directory = "public"
 binding = "ASSETS"
 
 [assets.upload]
 filters = ["!node_modules/**", "!server.js", "!package*.json", "!wrangler.toml", "!.env*"]
-
