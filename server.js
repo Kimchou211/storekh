@@ -861,7 +861,7 @@ app.delete('/api/admin/products/:id', adminAuth, async (req, res) => {
 });
 
 // Serve static files
-app.use(express.static('.'));
+app.use(express.static('public'));
 
 // ═══════════════════════════════════════════════════════════════
 //  START
