@@ -13,27 +13,31 @@ import 'dotenv/config';
 const app = express();
 
 // ─── CONFIG ──────────────────────────────────────────────────
+// ចំណាំ៖ នៅលើ Cloudflare បើ process.env មិនដើរ ត្រូវប្រាកដថាបាន set ក្នុង Dashboard
 const BAKONG = {
-  token   : process.env.BAKONG_TOKEN    || '',
-  account : process.env.BAKONG_ACCOUNT  || 'kimchou_kren@bkrt',
-  merchant: process.env.BAKONG_MERCHANT || 'NyKa_Shop',
-  city    : process.env.BAKONG_CITY     || 'Kampong Chhnang',
+  token   : (typeof process !== 'undefined' ? process.env.BAKONG_TOKEN : '') || '',
+  account : (typeof process !== 'undefined' ? process.env.BAKONG_ACCOUNT : '') || 'kimchou_kren@bkrt',
+  merchant: (typeof process !== 'undefined' ? process.env.BAKONG_MERCHANT : '') || 'NyKa_Shop',
+  city    : (typeof process !== 'undefined' ? process.env.BAKONG_CITY : '') || 'Kampong Chhnang',
   country : 'KH',
 };
 const TG = {
-  token  : process.env.TG_TOKEN   || '',
-  chat_id: process.env.TG_CHAT_ID || '',
-  contact: process.env.TG_CONTACT || 'https://t.me/krenkimchou',
+  token  : (typeof process !== 'undefined' ? process.env.TG_TOKEN : '') || '',
+  chat_id: (typeof process !== 'undefined' ? process.env.TG_CHAT_ID : '') || '',
+  contact: (typeof process !== 'undefined' ? process.env.TG_CONTACT : '') || 'https://t.me/krenkimchou',
 };
-const JWT_SECRET = process.env.JWT_SECRET || 'nyka_shop_2025_secret';
-const PORT       = process.env.PORT       || 5000;
+const JWT_SECRET = (typeof process !== 'undefined' ? process.env.JWT_SECRET : '') || 'nyka_shop_2025_secret';
+const PORT       = (typeof process !== 'undefined' ? process.env.PORT : '') || 5000;
+
+// WEBHOOK_URL សម្រាប់ Telegram Callback
+const WEBHOOK_URL = (typeof process !== 'undefined' ? process.env.WEBHOOK_URL : '') || '';
 
 // ─── SUPABASE ─────────────────────────────────────────────────
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseUrl = (typeof process !== 'undefined' ? process.env.SUPABASE_URL : '');
+const supabaseKey = (typeof process !== 'undefined' ? process.env.SUPABASE_SERVICE_ROLE_KEY : '');
 
 if (!supabaseUrl || !supabaseKey) {
-  console.error('❌ Error: Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables.');
+  console.warn('⚠️ Warning: Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY. Check your Cloudflare Variables.');
 }
 
 const supabase = createClient(supabaseUrl || '', supabaseKey || '');
@@ -151,7 +155,7 @@ async function tgAnswer(callbackQueryId, text) {
 }
 
 async function registerWebhook() {
-  const host = process.env.WEBHOOK_URL;
+  const host = WEBHOOK_URL;
   if (!host) { console.log('⚠️  WEBHOOK_URL not set — Telegram inline confirm requires this'); return; }
   const url = host + '/api/telegram/webhook';
   try {
@@ -584,7 +588,7 @@ app.post('/api/telegram/webhook', async (req, res) => {
   const cb   = req.body.callback_query;
   if (!cb) return;
   const { id: cbId, data } = cb;
-  const host = process.env.WEBHOOK_URL || '';
+  const host = WEBHOOK_URL;
 
   if (data && data.startsWith('confirm:')) {
     const bill = data.replace('confirm:', '');
