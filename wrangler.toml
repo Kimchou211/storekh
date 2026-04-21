@@ -9,3 +9,4 @@ binding = "ASSETS"
 
 [assets.upload]
 filters = ["!node_modules/**", "!server.js", "!package*.json", "!wrangler.toml", "!.env*"]
+
